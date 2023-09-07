@@ -52,13 +52,13 @@ def create_app():
         app.logger.info("Base URL")
         return jsonify(f"Base Endpoint, No Functionality"), 404
 
-    @app.route("/cold-start")
+    @app.route("/cold-start", methods=["POST"])
     def cold_start():
         try:
             # parse input
             data = request.json
             # instantiate cold-start
-            cold_start = ColdStart(data=data)
+            cold_start = ColdStart(data=data, logger=app.logger)
             # predict
             predicted_plans = cold_start.predict_plans()
 
@@ -74,4 +74,4 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "8080")))

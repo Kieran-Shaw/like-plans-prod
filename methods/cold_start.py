@@ -53,6 +53,7 @@ class ColdStart:
         # Find the most similar carrier name based on minimum distance
         most_similar_index = np.argmin(distances)
         most_similar_carrier_name = unique_carrier_names[most_similar_index]
+        print(most_similar_carrier_name)
 
         # log out the most similar
         self.logger.info(
@@ -72,9 +73,8 @@ class ColdStart:
         new_df = df.copy()
 
         # filter new dataframe
-        filtered_df = new_df[new_df["carrier"] == similar_carrier_name].reset_index(
-            drop=True
-        )
+        filtered_df = new_df[new_df["carrier"] == similar_carrier_name]
+        filtered_df.reset_index(drop=True, inplace=True)
 
         # log out the filtered dataframe
         self.logger.info(
@@ -89,21 +89,35 @@ class ColdStart:
         name_vectors = self.vectorizer.fit_transform(filtered_df["name"])
 
         # Find the most similar plan
-        query_vector = self.vectorizer.transform([self.census_carrier_name])
+        query_vector = self.vectorizer.transform([self.census_plan_admin_name])
         similarities = cosine_similarity(query_vector, name_vectors)
 
         # Get the indices of the top three most similar plans
         top_three_indices = similarities.argsort()[0][-3:][::-1]
+        print(top_three_indices)
 
         # Get the most similar plan names and IDs
         top_three_names = filtered_df.loc[top_three_indices, "name"].values
         top_three_ids = filtered_df.loc[top_three_indices, "id"].values
+        top_three_scores = similarities[0][top_three_indices]
 
         # Package the information into a dictionary
         response_object = {
-            "1": {"name": top_three_names[0], "id": top_three_ids[0]},
-            "2": {"name": top_three_names[1], "id": top_three_ids[1]},
-            "3": {"name": top_three_names[2], "id": top_three_ids[2]},
+            "1": {
+                "name": top_three_names[0],
+                "id": top_three_ids[0],
+                "score": top_three_scores[0],
+            },
+            "2": {
+                "name": top_three_names[1],
+                "id": top_three_ids[1],
+                "score": top_three_scores[1],
+            },
+            "3": {
+                "name": top_three_names[2],
+                "id": top_three_ids[2],
+                "score": top_three_scores[2],
+            },
         }
 
         return response_object
