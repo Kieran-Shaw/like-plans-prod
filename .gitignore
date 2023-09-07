@@ -1,0 +1,6 @@
+*.code-workspace
+logs/*
+.env
+.vscode
+tests
+__pycache__/
