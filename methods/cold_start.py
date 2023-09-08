@@ -94,7 +94,6 @@ class ColdStart:
 
         # Get the indices of the top three most similar plans
         top_three_indices = similarities.argsort()[0][-3:][::-1]
-        print(top_three_indices)
 
         # Get the most similar plan names and IDs
         top_three_names = filtered_df.loc[top_three_indices, "name"].values
@@ -119,5 +118,11 @@ class ColdStart:
                 "score": top_three_scores[2],
             },
         }
+
+        # log out the response object
+        self.logger.info(
+            "Most similar plans returned",
+            extra={"response_object": response_object},
+        )
 
         return response_object
