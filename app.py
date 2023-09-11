@@ -12,7 +12,7 @@ from methods.cold_start import ColdStart
 def configure_logging(app):
     log_level = app.config.get("LOG_LEVEL", logging.INFO)
 
-    if os.getenv("ENVIRONMENT") == "aws":
+    if os.getenv("ENVIRONMENT") == "production":
         # AWS environment, let CloudWatch handle logging.
         logging.basicConfig(
             level=log_level,
@@ -38,7 +38,7 @@ def create_app():
 
     load_dotenv()  # load environment variables from .env file
 
-    env = os.getenv("FLASK_ENV", "production")
+    env = os.getenv("ENVIRONMENT", "production")
 
     if env == "development":
         app.config.from_object(DevelopmentConfig)
